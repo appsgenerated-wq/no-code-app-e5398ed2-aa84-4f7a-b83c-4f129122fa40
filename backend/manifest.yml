@@ -1,0 +1,69 @@
+name: NewtonVsLagrange
+
+entities:
+  User:
+    authenticable: true
+    properties:
+      - name
+      - name: email
+        type: email
+      - name: role
+        type: choice
+        options:
+          values: [admin, user]
+        default: user
+    policies:
+      create:
+        - access: admin
+      read:
+        - access: restricted
+          allow: User
+          condition: self
+      update:
+        - access: restricted
+          allow: User
+          condition: self
+      delete:
+        - access: admin
+      signup:
+        - access: public
+
+  Concept:
+    properties:
+      - name: title
+        type: string
+      - name: explanation
+        type: richText
+      - name: proponent
+        type: choice
+        options:
+          values: [Newton, Lagrange]
+      - name: category
+        type: string
+        helpText: 'e.g., Calculus, Mechanics, Optics'
+    belongsTo:
+      - name: author
+        entity: User
+    policies:
+      create:
+        - access: restricted
+          allow: User
+      read:
+        - access: public
+      update:
+        - access: restricted
+          allow: User
+          condition: self
+      delete:
+        - access: restricted
+          allow: User
+          condition: self
+
+
+# Health check endpoint for connection testing
+endpoints:
+  health:
+    path: /api/health
+    method: GET
+    policies: []
+    handler: healthCheck
